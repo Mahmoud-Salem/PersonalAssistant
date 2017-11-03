@@ -57,7 +57,7 @@ func Register (w http.ResponseWriter , req *http.Request){
     }
             // database configuration 
             session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
-            
+            ai.Connect(session.DB("test").C("users"))
             if err != nil {
                 w.WriteHeader(http.StatusInternalServerError)
                 e := map[string]string{"message":"Internal Error "}		
