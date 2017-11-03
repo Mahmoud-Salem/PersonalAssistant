@@ -58,18 +58,17 @@ func Register (w http.ResponseWriter , req *http.Request){
             // database configuration 
             session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
             
-        if err != nil {
-            w.WriteHeader(http.StatusInternalServerError)
-            e := map[string]string{"message":"Internal Error "}		
-            json.NewEncoder(w).Encode(e)
-            return 
-                panic(err)
-        }
-        defer session.Close()
-        session.SetMode(mgo.Monotonic, true)
+            if err != nil {
+                w.WriteHeader(http.StatusInternalServerError)
+                e := map[string]string{"message":"Internal Error "}		
+                json.NewEncoder(w).Encode(e)
+                    panic(err)
+            }
+            defer session.Close()
+            session.SetMode(mgo.Monotonic, true)
                         // Registeration
-        users := session.DB("test").C("users")
-        currentUsers := []User{User{}}
+            users := session.DB("test").C("users")
+            currentUsers := []User{User{}}
         err = users.Find(bson.M{"email": email}).All(&currentUsers)
         if(err != nil){
           w.WriteHeader(http.StatusInternalServerError)  
