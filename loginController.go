@@ -45,7 +45,7 @@ func Login (w http.ResponseWriter , req *http.Request){
 		return
     }
 // database configuration 
-    session, err := mgo.Dial("localhost")   
+    session, err := mgo.Dial("https://personal-assistant-10.herokuapp.com/")   
         if err != nil {
             w.WriteHeader(http.StatusInternalServerError)
                 panic(err)
