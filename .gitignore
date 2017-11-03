@@ -1,0 +1,8 @@
+/vendor/appengine
+/vendor/appengine_internal
+/vendor/clound.google.com
+/vendor/context
+/vendor/github.com
+/vendor/golang.org
+/vendor/google.golang.org
+/vendor/gopkg.in
