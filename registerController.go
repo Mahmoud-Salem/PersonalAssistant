@@ -60,6 +60,9 @@ session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:4522
         ai.Connect(session.DB("test").C("counters"))
         if err != nil {
             w.WriteHeader(http.StatusInternalServerError)
+            e := map[string]string{"message":"Internal Error "}		
+            json.NewEncoder(w).Encode(e)
+            return 
                 panic(err)
         }
         defer session.Close()
