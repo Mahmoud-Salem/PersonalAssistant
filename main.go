@@ -14,19 +14,22 @@ func routes(w http.ResponseWriter, req *http.Request) {
 	auth := req.Header.Get("Authorization")
 	if auth == "" || req.Header["Authorization"] == nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(`{ "message" : "You have to include your id ."}`)
+		e := map[string]string{"message":"You have to include your id ."}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if req.Body == nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(`{ "message" : "Ask me Something ."}`)
+		e := map[string]string{"message":"Ask me Something ."}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	req.ParseForm()
 	if req.Form.Get("message") == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(`{ "message" : "The message can't be empty."}`)
+		e := map[string]string{"message":"The message can't be empty."}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	body := req.Form.Get("message")
@@ -39,7 +42,8 @@ func routes(w http.ResponseWriter, req *http.Request) {
 		HandleKey(w, req, body)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(`{ "message" : "You have to specify what service you want calendar , keys or memos ."}`)
+		e := map[string]string{"message":"You have to specify what service you want calendar , keys or memos ."}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
@@ -48,8 +52,11 @@ func routes(w http.ResponseWriter, req *http.Request) {
 func Welcome(w http.ResponseWriter, req *http.Request) {
 
 	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(`{ "message" : "Welcome to our personal assistant to register fill in your email , name and password in /register request"}`)
+//	json.NewEncoder(w).Encode(`{ "message" : "Welcome to our personal assistant to register fill in your email , name and password in /register request"}`)
 
+//json.NewEncoder(w).Encode({"message":"Welcome to our personal assistant to register fill in your email , name and password in /register request"}) 
+d := map[string]string{"message":"Welcome to our personal assistant to register fill in your email , name and password in /register request"}
+json.NewEncoder(w).Encode(d)
 }
 func main() {
 

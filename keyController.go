@@ -16,7 +16,8 @@ func HandleKey(w http.ResponseWriter, req *http.Request, body string) {
 	// validate the request header
 	if req.Header.Get("Authorization") == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Please Provide The Authorization Key")
+		e := map[string]string{"message":"Please Provide The Authorization Key"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	// validate the database connection
@@ -24,6 +25,8 @@ func HandleKey(w http.ResponseWriter, req *http.Request, body string) {
 	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		e := map[string]string{"message":"Internal Error"}		
+		json.NewEncoder(w).Encode(e)
 		panic(err)
 	}
 	defer session.Close()
@@ -35,13 +38,15 @@ func HandleKey(w http.ResponseWriter, req *http.Request, body string) {
 	err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(`{ "message" :"No Such an Authorization ID."}`)
+		e := map[string]string{"message":"No Such an Authorization ID."}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	// validate the request body
 	if body == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Please Provide a Body for your Request")
+		e := map[string]string{"message":"Please Provide a Body for your Request"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	//route to a handler based on the request
@@ -57,7 +62,8 @@ func HandleKey(w http.ResponseWriter, req *http.Request, body string) {
 		ShowKeyHandler(w, req, body)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Not a valid instruction for Key operations {make,edit,delete,show,showAll}")
+		e := map[string]string{"message":"Not a valid instruction for Key operations {make,edit,delete,show,showAll}"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
@@ -68,29 +74,34 @@ func MakeKeyHandler(w http.ResponseWriter, req *http.Request, body string) {
 	tokens := strings.Split(body, ".")
 	if len(tokens) != 4 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if len(tokens[2]) < 5 || len(tokens[3]) < 6 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Contains(tokens[2], "name:") && strings.Contains(tokens[3], "value:") == false {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of key.make.name:name of your key .value:value of your key")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of key.make.name:name of your key .value:value of your key"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if tokens[0] != "key" || tokens[1] != "make" || (tokens[2])[0:5] != "name:" || (tokens[3])[0:6] != "value:" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of key.make.name:name of your key .value:value of your key")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of key.make.name:name of your key .value:value of your key"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1) == "" ||
 		strings.Replace(strings.Split(tokens[3], ":")[1], " ", "", -1) == "" {
 
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Neither the name nor the value can be spaces or empty string")
+		e := map[string]string{"message":"Neither the name nor the value can be spaces or empty string"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	name := strings.Split(tokens[2], ":")[1]
@@ -106,6 +117,8 @@ func MakeKey(w http.ResponseWriter, req *http.Request, name string, value string
 	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		e := map[string]string{"message":"Internal Error"}		
+		json.NewEncoder(w).Encode(e)
 		panic(err)
 	}
 	defer session.Close()
@@ -126,12 +139,14 @@ func MakeKey(w http.ResponseWriter, req *http.Request, name string, value string
 	err2 := users.Update(colQuerier, change)
 	if err2 != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Can't Update Keys")
+		e := map[string]string{"message":"Can't Update Keys"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("Key Added Successfully")
+	e := map[string]string{"message":"Key Added Successfully"}		
+	json.NewEncoder(w).Encode(e)
 	return
 
 }
@@ -142,24 +157,28 @@ func EditKeyHandler(w http.ResponseWriter, req *http.Request, body string) {
 	tokens := strings.Split(body, ".")
 	if len(tokens) != 5 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 
 	}
 	if len(tokens[2]) < 3 || len(tokens[4]) < 6 || len(tokens[3]) < 5 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Contains(tokens[2], "id:") && strings.Contains(tokens[3], "name:") && strings.Contains(tokens[4], "value::") == false {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of => key.edit.id:id of your key .name:new name .value:new value")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of => key.edit.id:id of your key .name:new name .value:new value"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	if tokens[0] != "key" || tokens[1] != "edit" || (tokens[2])[0:3] != strings.ToLower("id:") || (tokens[3])[0:5] != strings.ToLower("name:") || (tokens[4])[0:6] != strings.ToLower("value:") {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of => key.edit.id:id of your key .name:new name .value:new value")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of => key.edit.id:id of your key .name:new name .value:new value"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1) == "" ||
@@ -167,13 +186,15 @@ func EditKeyHandler(w http.ResponseWriter, req *http.Request, body string) {
 		strings.Replace(strings.Split(tokens[4], ":")[1], " ", "", -1) == "" {
 
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Neither the id, the name nor the value can be spaces or empty string")
+		e := map[string]string{"message":"Neither the id, the name nor the value can be spaces or empty string"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	id, errInt := strconv.Atoi(strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1))
 	if errInt != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Id must be a number")
+		e := map[string]string{"message":"Id must be a number"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	name := strings.Split(tokens[3], ":")[1]
@@ -188,6 +209,8 @@ func EditKey(w http.ResponseWriter, req *http.Request, id int, name string, valu
 	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		panic(err)
 	}
 	defer session.Close()
@@ -199,7 +222,8 @@ func EditKey(w http.ResponseWriter, req *http.Request, id int, name string, valu
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode("Invalid Authorization ID")
+		e := map[string]string{"message":"Invalid Authorization ID"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
@@ -218,7 +242,8 @@ func EditKey(w http.ResponseWriter, req *http.Request, id int, name string, valu
 	}
 	if found == 0 {
 		w.WriteHeader(http.StatusForbidden)
-		json.NewEncoder(w).Encode("You don't have a Key with this ID")
+		e := map[string]string{"message":"You don't have a Key with this ID"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	colQuerier := bson.M{"unique": req.Header.Get("Authorization")}
@@ -226,11 +251,13 @@ func EditKey(w http.ResponseWriter, req *http.Request, id int, name string, valu
 	err2 := users.Update(colQuerier, change)
 	if err2 != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Can't Update Keys")
+		e := map[string]string{"message":"Can't Update Keys"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("Key Updated Successfully")
+	e := map[string]string{"message":"Key Updated Successfully"}		
+	json.NewEncoder(w).Encode(e)
 	return
 
 }
@@ -240,33 +267,39 @@ func DeleteKeyHandler(w http.ResponseWriter, req *http.Request, body string) {
 	tokens := strings.Split(body, ".")
 	if len(tokens) != 3 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Contains(tokens[2], "id:") == false {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of key.delete.id:id of your key")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of key.delete.id:id of your key"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if len(tokens[2]) < 3 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if tokens[0] != "key" || tokens[1] != "delete" || (tokens[2])[0:3] != "id:" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of key.delete.id:id of your key")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of key.delete.id:id of your key"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1) == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("The id  can't be spaces or empty string")
+		e := map[string]string{"message":"The id  can't be spaces or empty string"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	id, errInt := strconv.Atoi(strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1))
 	if errInt != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Id must be a number")
+		e := map[string]string{"message":"Id must be a number"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	DeleteKey(w, req, id)
@@ -290,7 +323,8 @@ func DeleteKey(w http.ResponseWriter, req *http.Request, id int) {
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error in the Database Conncetion")
+		e := map[string]string{"message":"Error in the Database Conncetion"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	currentKeys := foundUser.Keys
@@ -306,7 +340,8 @@ func DeleteKey(w http.ResponseWriter, req *http.Request, id int) {
 	}
 	if found == 0 {
 		w.WriteHeader(http.StatusForbidden)
-		json.NewEncoder(w).Encode("You don't have a Key with this ID")
+		e := map[string]string{"message":"You don't have a Key with this ID"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	colQuerier := bson.M{"unique": req.Header.Get("Authorization")}
@@ -314,11 +349,13 @@ func DeleteKey(w http.ResponseWriter, req *http.Request, id int) {
 	err2 := users.Update(colQuerier, change)
 	if err2 != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Can't Delete Key due to a Database Error")
+		e := map[string]string{"message":"Can't Delete Key due to a Database Error"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("Key Deleted Successfully")
+	e := map[string]string{"message":"Key Deleted Successfully"}		
+	json.NewEncoder(w).Encode(e)
 	return
 
 }
@@ -327,13 +364,15 @@ func ShowAllKeysHandler(w http.ResponseWriter, req *http.Request, body string) {
 	tokens := strings.Split(body, ".")
 	if len(tokens) != 2 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	if tokens[0] != "key" || tokens[1] != "showAll" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of key.showAll")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of key.showAll"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	showAllKeys(w, req)
@@ -343,6 +382,8 @@ func showAllKeys(w http.ResponseWriter, req *http.Request) {
 	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		e := map[string]string{"message":"Internal Error"}		
+		json.NewEncoder(w).Encode(e)
 		panic(err)
 	}
 	defer session.Close()
@@ -354,7 +395,8 @@ func showAllKeys(w http.ResponseWriter, req *http.Request) {
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error in the Database Conncetion")
+		e := map[string]string{"message":"Error in the Database Conncetion"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	currentKeys := foundUser.Keys
@@ -368,33 +410,39 @@ func ShowKeyHandler(w http.ResponseWriter, req *http.Request, body string) {
 	tokens := strings.Split(body, ".")
 	if len(tokens) != 3 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Contains(tokens[2], "id:") == false {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of key.show.id:id of your key")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of key.show.id:id of your key"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if len(tokens[2]) < 3 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if tokens[0] != "key" || tokens[1] != "show" || (tokens[2])[0:3] != "id:" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of key.show.id:id of your key")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of key.show.id:id of your key"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1) == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("The id  can't be spaces or empty string")
+		e := map[string]string{"message":"The id  can't be spaces or empty string"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	id, errInt := strconv.Atoi(strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1))
 	if errInt != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Id must be a number")
+		e := map[string]string{"message":"Id must be a number"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	ShowKey(w, req, id)
@@ -406,6 +454,8 @@ func ShowKey(w http.ResponseWriter, req *http.Request, id int) {
 	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		e := map[string]string{"message":"Internal Error"}		
+		json.NewEncoder(w).Encode(e)
 		panic(err)
 	}
 	defer session.Close()
@@ -417,7 +467,8 @@ func ShowKey(w http.ResponseWriter, req *http.Request, id int) {
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error in the Database Conncetion")
+		e := map[string]string{"message":"Error in the Database Conncetion"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	currentKeys := foundUser.Keys
@@ -433,7 +484,8 @@ func ShowKey(w http.ResponseWriter, req *http.Request, id int) {
 	}
 	if found == 0 {
 		w.WriteHeader(http.StatusForbidden)
-		json.NewEncoder(w).Encode("You don't have a Key with this ID")
+		e := map[string]string{"message":"You don't have a Key with this ID"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 }

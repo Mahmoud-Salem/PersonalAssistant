@@ -26,7 +26,8 @@ func HandleCalendar(w http.ResponseWriter, req *http.Request ,body string) {
         ModifyEvent(w,req,body)
     } else {
         w.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(w).Encode(`{ "message" : " You have to specify what you want to do with the calendar whether it is add event , delete event , modify event or show all ."}`)
+        e := map[string]string{"message":"You have to specify what you want to do with the calendar whether it is add event , delete event , modify event or show all ."}		
+        json.NewEncoder(w).Encode(e)
         return;
     }
 }
@@ -48,7 +49,8 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
     err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
     if(err != nil){
         w.WriteHeader(http.StatusUnauthorized)
-        json.NewEncoder(w).Encode(`{ "message" :"No Such ID."}`)
+        e := map[string]string{"message":"No Such ID."}		
+        json.NewEncoder(w).Encode(e)
         return
       }
 
@@ -57,8 +59,9 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
     srv ,err3 := Calendar();
         
 	if err3 != nil {	
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(`{ "message" : "Server Can't use google calendar."} `)
+        w.WriteHeader(http.StatusInternalServerError)
+        e := map[string]string{"message":"Server Can't use google calendar."}		
+        json.NewEncoder(w).Encode(e)
 		return	
         }
 
@@ -69,7 +72,8 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
         }).Do()
         if err != nil {
                 w.WriteHeader(http.StatusInternalServerError)
-                json.NewEncoder(w).Encode(`{ "message" : "Server problem ."}`)
+                e := map[string]string{"message":"Server problem ."}		
+                json.NewEncoder(w).Encode(e)
                 return	
         }
         cal = call.Id
@@ -79,7 +83,8 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
         err2:= users.Update(colQuerier, change)
         if err2 != nil {	
         w.WriteHeader(http.StatusInternalServerError)
-        json.NewEncoder(w).Encode(`{"message" : "Server problem ."}`)
+        e := map[string]string{"message":"Server problem ."}		
+        json.NewEncoder(w).Encode(e)
         return	
         }
     }
@@ -112,7 +117,8 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
     if !(starttime != "" && endtime != "" && name != "" && description != "") {
         w.WriteHeader(http.StatusBadRequest)
         str := "Your request for adding event should be as follows : add calendar event . start time /"+t+" . end time /"+t+". name / anything . description / anything."
-        json.NewEncoder(w).Encode(`{ "message" : "`+str+`"} `)
+        e := map[string]string{"message":str}		
+        json.NewEncoder(w).Encode(e)
         return	
     }
     
@@ -136,12 +142,14 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
 		  if err != nil {
             w.WriteHeader(http.StatusBadRequest)
             str := "Your request for adding event should be as follows : add calendar event . start time /"+t+" . end time /"+t+". name / anything . description / anything."
-            json.NewEncoder(w).Encode(`{ "message" : "`+str+`"} `)
+            e := map[string]string{"message":str}		
+            json.NewEncoder(w).Encode(e)
             return	
 		  }
 w.WriteHeader(http.StatusOK)
 sstr := "Event Added Successfully you can use the event id to modify or delete event , event id :"+event.Id+"."
-json.NewEncoder(w).Encode(`{ "message" : "`+sstr+`"} `)
+e := map[string]string{"message":sstr}		
+json.NewEncoder(w).Encode(e)
 return
 
 }
@@ -164,7 +172,8 @@ func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
     err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
     if(err != nil){
         w.WriteHeader(http.StatusUnauthorized)
-        json.NewEncoder(w).Encode(`{ "message" :"No Such ID."}`)
+        e := map[string]string{"message":"No Such ID."}		
+        json.NewEncoder(w).Encode(e)
         return
       }
 
@@ -173,8 +182,9 @@ func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
     srv ,err3 := Calendar();
         
 	if err3 != nil {	
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(`{ "message" : "Server Can't use google calendar."}` )
+        w.WriteHeader(http.StatusInternalServerError)
+        e := map[string]string{"message":"Server Can't use google calendar."}		
+        json.NewEncoder(w).Encode(e)
 		return	
         }
 
@@ -182,15 +192,17 @@ func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
 		  calendarId := foundUser.CalendarId
           if calendarId == "" {	
             w.WriteHeader(http.StatusOK)
-            json.NewEncoder(w).Encode(` { "message" : "No Upcoming events."} `)
+            e := map[string]string{"message":"No Upcoming events."}		
+            json.NewEncoder(w).Encode(e)
             return	
             }
           t := time.Now().Format(time.RFC3339)
           
           events, err := srv.Events.List(calendarId).ShowDeleted(false).SingleEvents(true).TimeMin(t).OrderBy("startTime").Do()
           if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(`{ "message" : "Can't Show Events. "}`)
+            w.WriteHeader(http.StatusInternalServerError)
+            e := map[string]string{"message":"Can't Show Events."}		
+            json.NewEncoder(w).Encode(e)
 			return	
           }
         ev := ""
@@ -214,18 +226,21 @@ func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
           
         } else {
             w.WriteHeader(http.StatusOK)
-            json.NewEncoder(w).Encode(` { "message" : "No Upcoming events."} `)
+            e := map[string]string{"message":"No Upcoming events."}		
+            json.NewEncoder(w).Encode(e)
             return
 
         }
         if(ev == ""){
             w.WriteHeader(http.StatusOK)
-            json.NewEncoder(w).Encode(` { "message" : "No Upcoming events."} `)
+            e := map[string]string{"message":"No Upcoming events."}		
+            json.NewEncoder(w).Encode(e)
             return 
         }
         ev = ev[0:len(ev)-1]
 w.WriteHeader(http.StatusOK)
-json.NewEncoder(w).Encode(`{ "message" : "Your coming events : {"`+ev+`"} }`)
+e := map[string]string{"message":ev}		
+json.NewEncoder(w).Encode(e)
 return
 
 }
@@ -250,7 +265,8 @@ func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
     err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
     if(err != nil){
         w.WriteHeader(http.StatusUnauthorized)
-        json.NewEncoder(w).Encode(`{ "message" :"No Such ID."}`)
+        e := map[string]string{"message":"No Such ID."}		
+        json.NewEncoder(w).Encode(e)
         return
       }
 
@@ -261,14 +277,16 @@ func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
 
     if cal == "" {
         w.WriteHeader(422)
-        json.NewEncoder(w).Encode(`{ "message" : "No events with this id ."}`)
+        e := map[string]string{"message":"No events with this id ."}		
+        json.NewEncoder(w).Encode(e)
         return
     }
 
 	srv ,err3 := Calendar()
 	if err3 != nil {	
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(`{ "message" : "Server Can't use google calendar."} `)
+        e := map[string]string{"message":"Server Can't use google calendar."}		
+        json.NewEncoder(w).Encode(e)
 		return	
         }
 
@@ -282,17 +300,20 @@ func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
         }
         if id == "" {
             w.WriteHeader(http.StatusBadRequest)
-            json.NewEncoder(w).Encode(`{ "message" : "Your request for adding event should be as follows : delete calendar event . event id :id."}`)
+            e := map[string]string{"message":"Your request for adding event should be as follows : delete calendar event . event id :id."}		
+            json.NewEncoder(w).Encode(e)
             return	
         }
          errr:=srv.Events.Delete(cal,id).Do()
           if errr != nil {
             w.WriteHeader(422)
-            json.NewEncoder(w).Encode(`{ "message" : "No events with this id ."}`)
+            e := map[string]string{"message":"No events with this id ."}		
+            json.NewEncoder(w).Encode(e)
             return	
           }
           w.WriteHeader(http.StatusOK)
-          json.NewEncoder(w).Encode(`{ "message" : "event deleted successfully."}`)
+          e := map[string]string{"message":"event deleted successfully."}		
+          json.NewEncoder(w).Encode(e)
           return
 
 }
@@ -315,7 +336,8 @@ func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
     err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
     if(err != nil){
         w.WriteHeader(http.StatusUnauthorized)
-        json.NewEncoder(w).Encode(`{ "message" :"No Such ID."}`)
+        e := map[string]string{"message":"No Such ID."}		
+        json.NewEncoder(w).Encode(e)
         return
       }
 
@@ -324,15 +346,17 @@ func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
     srv ,err3 := Calendar();
         
 	if err3 != nil {	
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(`{ "message" : "Server Can't use google calendar."} `)
+        w.WriteHeader(http.StatusInternalServerError)
+        e := map[string]string{"message":"Server Can't use google calendar."}		
+        json.NewEncoder(w).Encode(e)
 		return	
         }
 
 
     if foundUser.CalendarId == "" {
         w.WriteHeader(422)
-        json.NewEncoder(w).Encode(`{ "message" : "No events with this id ."}`)
+        e := map[string]string{"message":"No events with this id ."}		
+        json.NewEncoder(w).Encode(e)
         return
     }
 
@@ -366,7 +390,8 @@ func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
         if eventId == "" {
             w.WriteHeader(http.StatusBadRequest)
             str := "Your request for modifying event should be as follows : modify calendar event .(Obligatory) event id / id . (Optional) start time / "+t+" . (Optional) end time / "+t+". (Optional) name / anything . (Optional) description / anything."
-            json.NewEncoder(w).Encode(`{ "message" : "`+str+`"}`)
+            e := map[string]string{"message":str}		
+            json.NewEncoder(w).Encode(e)
             return	
         }
 
@@ -374,7 +399,8 @@ func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
         event,err5 := srv.Events.Get(cal, eventId).Do()
         if err5 != nil {
 			w.WriteHeader(422)
-            json.NewEncoder(w).Encode(`{ "message" : "No events with this id ."}`)
+            e := map[string]string{"message":"No events with this id ."}		
+            json.NewEncoder(w).Encode(e)
 			return	
 		  }
         if endtime != "" {
@@ -397,12 +423,14 @@ func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
         if errr != nil {
           w.WriteHeader(http.StatusBadRequest)
           str := "Your request for modifying event should be as follows : modify calendar event .(Obligatory) event id / id . (Optional) start time / "+t+" . (Optional) end time / "+t+". (Optional) name / anything . (Optional) description / anything."
-          json.NewEncoder(w).Encode(`{ "message" : "`+str+`"}`)
+          e := map[string]string{"message":str}		
+          json.NewEncoder(w).Encode(e)
         return	
         }
 	
 w.WriteHeader(http.StatusOK)
-json.NewEncoder(w).Encode(`{"message" : "Event Modified Successfully ."}`)
+e := map[string]string{"message":"Event Modified Successfully ."}		
+json.NewEncoder(w).Encode(e)
 return
 
 }

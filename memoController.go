@@ -18,7 +18,8 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 	// validate the request header
 	if req.Header.Get("Authorization") == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Please Provide The Authorization Key")
+		e := map[string]string{"message":"Please Provide The Authorization Key"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	// validate the database connection
@@ -26,6 +27,8 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		e := map[string]string{"message":"Internal Error"}		
+		json.NewEncoder(w).Encode(e)
 		panic(err)
 	}
 	defer session.Close()
@@ -37,15 +40,11 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 	err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(`{ "message" :"No Such an Authorization ID."}`)
+		e := map[string]string{"message":"No Such an Authorization ID."}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
-	// validate the request body
-	if body == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Please Provide a Body for your Request")
-		return
-	}
+
 	//route to a handler based on the request
 	if strings.Contains(body, "make") {
 		MakeMemoHandler(w, req, body)
@@ -59,7 +58,8 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 		ShowMemoHandler(w, req, body)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Not a valid instruction for Memo operations {make,edit,delete,showAll}")
+		e := map[string]string{"message":"Not a valid instruction for Memo operations {make,edit,delete,showAll}"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
@@ -70,29 +70,34 @@ func MakeMemoHandler(w http.ResponseWriter, req *http.Request, body string) {
 	tokens := strings.Split(body, ".")
 	if len(tokens) != 4 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Contains(tokens[2], "name:") && strings.Contains(tokens[3], "content:") == false {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of memo.make.name:name of your memo .content:content of your memeo")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of memo.make.name:name of your memo .content:content of your memo"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if len(tokens[3]) < 5 || len(tokens[4]) < 8 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if tokens[0] != strings.ToLower("memo") || tokens[1] != strings.ToLower("make") || (tokens[2])[0:5] != strings.ToLower("name:") || (tokens[3])[0:8] != strings.ToLower("content:") {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of memo.make.name:name of your memo .content:content of your memeo")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of memo.make.name:name of your memo .content:content of your memo"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1) == "" ||
 		strings.Replace(strings.Split(tokens[3], ":")[1], " ", "", -1) == "" {
 
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Neither the name nor the content can be spaces or empty string")
+		e := map[string]string{"message":"Neither the name nor the content can be spaces or empty string"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	name := strings.Split(tokens[2], ":")[1]
@@ -108,6 +113,8 @@ func MakeMemo(w http.ResponseWriter, req *http.Request, name string, content str
 	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		e := map[string]string{"message":"Internal Error"}		
+		json.NewEncoder(w).Encode(e)
 		panic(err)
 	}
 	defer session.Close()
@@ -128,12 +135,14 @@ func MakeMemo(w http.ResponseWriter, req *http.Request, name string, content str
 	err2 := users.Update(colQuerier, change)
 	if err2 != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Can't Update Memos")
+		e := map[string]string{"message":"Can't Update Memos"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("Memo Added Successfully")
+	e := map[string]string{"message":"Memo Added Successfully"}		
+	json.NewEncoder(w).Encode(e)
 	return
 
 }
@@ -144,23 +153,27 @@ func EditMemoHandler(w http.ResponseWriter, req *http.Request, body string) {
 	tokens := strings.Split(body, ".")
 	if len(tokens) != 5 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if len(tokens[2]) < 3 || len(tokens[3]) < 5 || len(tokens[4]) < 8 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Contains(tokens[2], "id:") && strings.Contains(tokens[3], "name:") && strings.Contains(tokens[4], "content:") == false {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of memo.edit.id:id of your memo .name:new name .content:new content")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of memo.edit.id:id of your memo .name:new name .content:new content"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	if tokens[0] != strings.ToLower("memo") || tokens[1] != strings.ToLower("edit") || (tokens[2])[0:3] != strings.ToLower("id:") || (tokens[3])[0:5] != strings.ToLower("name:") || (tokens[4])[0:8] != strings.ToLower("content:") {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of memo.edit.id:id of your memo .name:new name .content:new content")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of memo.edit.id:id of your memo .name:new name .content:new content"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1) == "" ||
@@ -168,13 +181,15 @@ func EditMemoHandler(w http.ResponseWriter, req *http.Request, body string) {
 		strings.Replace(strings.Split(tokens[4], ":")[1], " ", "", -1) == "" {
 
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Neither the id, the name nor the content can be spaces or empty string")
+		e := map[string]string{"message":"Neither the id, the name nor the content can be spaces or empty string"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	id, errInt := strconv.Atoi(strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1))
 	if errInt != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Id must be a number")
+		e := map[string]string{"message":"Id must be a number"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	name := strings.Split(tokens[3], ":")[1]
@@ -200,7 +215,8 @@ func EditMemo(w http.ResponseWriter, req *http.Request, id int, name string, con
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode("Invalid Authorization ID")
+		e := map[string]string{"message":"Invalid Authorization ID"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
@@ -218,7 +234,8 @@ func EditMemo(w http.ResponseWriter, req *http.Request, id int, name string, con
 	}
 	if found == 0 {
 		w.WriteHeader(http.StatusForbidden)
-		json.NewEncoder(w).Encode("You don't have a Memo with this ID")
+		e := map[string]string{"message":"You don't have a Memo with this ID"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	colQuerier := bson.M{"unique": req.Header.Get("Authorization")}
@@ -226,11 +243,13 @@ func EditMemo(w http.ResponseWriter, req *http.Request, id int, name string, con
 	err2 := users.Update(colQuerier, change)
 	if err2 != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Can't Update Memos")
+		e := map[string]string{"message":"Can't Update Memos"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("Memo Updated Successfully")
+	e := map[string]string{"message":"Memo Updated Successfully"}		
+	json.NewEncoder(w).Encode(e)
 	return
 
 }
@@ -245,29 +264,34 @@ func DeleteMemoHandler(w http.ResponseWriter, req *http.Request, body string) {
 	}
 	if strings.Contains(tokens[2], "id:") == false {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of memo.delete.id:id of your memo")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of memo.delete.id:id of your memo"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if len(tokens[2]) < 3 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	if tokens[0] != strings.ToLower("memo") || tokens[1] != strings.ToLower("delete") || (tokens[2])[0:3] != "id:" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of memo.delete.id:id of your memo")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of memo.delete.id:id of your memo"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1) == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("The id  can't be spaces or empty string")
+		e := map[string]string{"message":"The id  can't be spaces or empty string"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	id, errInt := strconv.Atoi(strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1))
 	if errInt != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Id must be a number")
+		e := map[string]string{"message":"Id must be a number"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	DeleteMemo(w, req, id)
@@ -291,7 +315,8 @@ func DeleteMemo(w http.ResponseWriter, req *http.Request, id int) {
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error in the Database Conncetion")
+		e := map[string]string{"message":"Error in the Database Conncetion"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	currentMemos := foundUser.Memos
@@ -307,7 +332,8 @@ func DeleteMemo(w http.ResponseWriter, req *http.Request, id int) {
 	}
 	if found == 0 {
 		w.WriteHeader(http.StatusForbidden)
-		json.NewEncoder(w).Encode("You don't have a Memo with this ID")
+		e := map[string]string{"message":"You don't have a Memo with this ID"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	colQuerier := bson.M{"unique": req.Header.Get("Authorization")}
@@ -315,11 +341,13 @@ func DeleteMemo(w http.ResponseWriter, req *http.Request, id int) {
 	err2 := users.Update(colQuerier, change)
 	if err2 != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Can't Delete Memo due to a Database Error")
+		e := map[string]string{"message":"Can't Delete Memo due to a Database Error"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("Memo Deleted Successfully")
+	e := map[string]string{"message":"Memo Deleted Successfully"}		
+	json.NewEncoder(w).Encode(e)
 	return
 
 }
@@ -328,13 +356,15 @@ func ShowAllMemosHandler(w http.ResponseWriter, req *http.Request, body string) 
 	tokens := strings.Split(body, ".")
 	if len(tokens) != 2 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	if tokens[0] != "memo" || tokens[1] != "showAll" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of memo.showAll")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of memo.showAll"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	showAllMemos(w, req)
@@ -355,7 +385,8 @@ func showAllMemos(w http.ResponseWriter, req *http.Request) {
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error in the Database Conncetion")
+		e := map[string]string{"message":"Error in the Database Conncetion"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	currentMemos := foundUser.Memos
@@ -368,33 +399,39 @@ func ShowMemoHandler(w http.ResponseWriter, req *http.Request, body string) {
 	tokens := strings.Split(body, ".")
 	if len(tokens) != 3 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Contains(tokens[2], "id:") == false {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of memo.show.id:id of your memo")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of memo.show.id:id of your memo"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if len(tokens[2]) < 3 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format")
+		e := map[string]string{"message":"Invalid Format"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if tokens[0] != "memo" || tokens[1] != "show" || (tokens[2])[0:3] != "id:" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Format the format should be in the form of memo.show.id:id of your memo")
+		e := map[string]string{"message":"Invalid Format the format should be in the form of memo.show.id:id of your memo"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1) == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("The id  can't be spaces or empty string")
+		e := map[string]string{"message":"The id  can't be spaces or empty string"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	id, errInt := strconv.Atoi(strings.Replace(strings.Split(tokens[2], ":")[1], " ", "", -1))
 	if errInt != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Id must be a number")
+		e := map[string]string{"message":"Id must be a number"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 	ShowMemo(w, req, id)
@@ -406,6 +443,8 @@ func ShowMemo(w http.ResponseWriter, req *http.Request, id int) {
 	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		e := map[string]string{"message":"Internal Error"}		
+		json.NewEncoder(w).Encode(e)
 		panic(err)
 	}
 	defer session.Close()
@@ -417,7 +456,8 @@ func ShowMemo(w http.ResponseWriter, req *http.Request, id int) {
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error in the Database Conncetion")
+		e := map[string]string{"message":"Error in the Database Conncetion"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 
@@ -434,7 +474,8 @@ func ShowMemo(w http.ResponseWriter, req *http.Request, id int) {
 	}
 	if found == 0 {
 		w.WriteHeader(http.StatusForbidden)
-		json.NewEncoder(w).Encode("You don't have a Memo with this ID")
+		e := map[string]string{"message":"You don't have a Memo with this ID"}		
+		json.NewEncoder(w).Encode(e)
 		return
 	}
 }

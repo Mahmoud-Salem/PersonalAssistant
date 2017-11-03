@@ -14,13 +14,15 @@ func Login (w http.ResponseWriter , req *http.Request){
    // Validity checking    
    if req.Body == nil {
     w.WriteHeader(http.StatusBadRequest)
-    json.NewEncoder(w).Encode(`{ "message" : "provide your email and password in the following format to login . email : ms@gmail.com . password :123456 . "}`)
+    e := map[string]string{"message":"provide your email and password in the following format to login . email : ms@gmail.com . password :123456 . "}		
+    json.NewEncoder(w).Encode(e)
     return
 }
     req.ParseForm()
     if req.Form.Get("message") == "" {
 		w.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(w).Encode(`{ "message" : "provide your email and password in the following format to login . email : ms@gmail.com . password :123456 . "}`)
+        e := map[string]string{"message":"provide your email and password in the following format to login . email : ms@gmail.com . password :123456 . "}		
+        json.NewEncoder(w).Encode(e)
 		return
     }
     body := req.Form.Get("message")
@@ -41,7 +43,8 @@ func Login (w http.ResponseWriter , req *http.Request){
     }
     if !(email != "" && password != "") {
         w.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(w).Encode(`{ "message" : "provide your email and password in the following format to login . email : ms@gmail.com . password :123456 . "}`)
+        e := map[string]string{"message":"provide your email and password in the following format to login . email : ms@gmail.com . password :123456 . "}		
+        json.NewEncoder(w).Encode(e)
 		return
     }
 // database configuration 
@@ -59,17 +62,20 @@ func Login (w http.ResponseWriter , req *http.Request){
         err = users.Find(bson.M{"email": email}).One(&foundUser)
         if(err != nil){
           w.WriteHeader(http.StatusUnauthorized)
-          json.NewEncoder(w).Encode("No Such Email")
+          e := map[string]string{"message":"No Such Email "}		
+          json.NewEncoder(w).Encode(e)
           return
         }
      	error := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
     if(error != nil){
       w.WriteHeader(http.StatusUnauthorized)
-        json.NewEncoder(w).Encode("Wrong Password")
+        e := map[string]string{"message":"Wrong Password "}		
+        json.NewEncoder(w).Encode(e)
         return
     }else{
         w.WriteHeader(http.StatusOK)
-        json.NewEncoder(w).Encode("Logged-in Succesfully , here is your id. Use it to perform any action " +foundUser.Unique)
+        e := map[string]string{"message":"Logged-in Succesfully", "uuid": foundUser.Unique}		
+        json.NewEncoder(w).Encode(e)
         return
     }
 
