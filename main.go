@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"github.com/gorilla/mux"
+	"os"
 )
 
 func routes(w http.ResponseWriter, req *http.Request) {
@@ -64,7 +65,10 @@ func main() {
 
 	// Services
 	router.HandleFunc("/chat", routes).Methods("POST")
-
-	log.Fatal(http.ListenAndServe(":3000", router))
+	port := os.Getenv("PORT") 
+	if port == "" {
+		port = "8000"
+	}
+	log.Fatal(http.ListenAndServe(":"+port, router))
 
 }
