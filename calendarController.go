@@ -5,7 +5,6 @@ import(
 "encoding/json"
 "gopkg.in/mgo.v2"
 "gopkg.in/mgo.v2/bson"
-"services"
 "google.golang.org/api/calendar/v3"
 "time"
 "strings"
@@ -55,7 +54,7 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
 
     email := foundUser.Email
     cal := foundUser.CalendarId
-    srv ,err3 := services.Calendar();
+    srv ,err3 := Calendar();
         
 	if err3 != nil {	
 		w.WriteHeader(http.StatusInternalServerError)
@@ -171,7 +170,7 @@ func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
 
     //email := foundUser.Email
     //cal := foundUser.CalendarId
-    srv ,err3 := services.Calendar();
+    srv ,err3 := Calendar();
         
 	if err3 != nil {	
 		w.WriteHeader(http.StatusInternalServerError)
@@ -266,7 +265,7 @@ func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
         return
     }
 
-	srv ,err3 := services.Calendar()
+	srv ,err3 := Calendar()
 	if err3 != nil {	
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(`{ "message" : "Server Can't use google calendar."} `)
@@ -322,7 +321,7 @@ func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
 
     //email := foundUser.Email
     cal := foundUser.CalendarId
-    srv ,err3 := services.Calendar();
+    srv ,err3 := Calendar();
         
 	if err3 != nil {	
 		w.WriteHeader(http.StatusInternalServerError)

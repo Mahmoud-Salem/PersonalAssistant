@@ -2,7 +2,6 @@
 package main
 
 import (
-	"controllers"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -66,6 +65,6 @@ func main() {
 	// Services
 	router.HandleFunc("/chat", routes).Methods("POST")
 
-	log.Fatal(http.ListenAndServe(":8000", router))
+	log.Fatal(http.ListenAndServe(":3000", router))
 
 }

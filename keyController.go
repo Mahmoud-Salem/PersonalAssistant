@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-
 	"strings"
-
 	"github.com/night-codes/mgo-ai"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
