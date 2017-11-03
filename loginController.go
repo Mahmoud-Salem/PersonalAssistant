@@ -45,7 +45,7 @@ func Login (w http.ResponseWriter , req *http.Request){
 		return
     }
 // database configuration 
-    session, err := mgo.Dial("mongodb://mahmoud-salem:123a456@ds145223.mlab.com:45223/personalassistant")   
+    session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
         if err != nil {
             w.WriteHeader(http.StatusInternalServerError)
                 panic(err)
