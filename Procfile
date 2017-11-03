@@ -1,1 +1,1 @@
-web: personal-assistant-10
+web: personalAssistant
