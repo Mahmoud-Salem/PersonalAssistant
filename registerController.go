@@ -56,8 +56,8 @@ func Register (w http.ResponseWriter , req *http.Request){
 		return
     }
             // database configuration 
-session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
-        ai.Connect(session.DB("test").C("users"))
+            session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
+            
         if err != nil {
             w.WriteHeader(http.StatusInternalServerError)
             e := map[string]string{"message":"Internal Error "}		
@@ -68,7 +68,7 @@ session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:4522
         defer session.Close()
         session.SetMode(mgo.Monotonic, true)
                         // Registeration
-users := session.DB("test").C("users")
+        users := session.DB("test").C("users")
         currentUsers := []User{User{}}
         err = users.Find(bson.M{"email": email}).All(&currentUsers)
         if(err != nil){

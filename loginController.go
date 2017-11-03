@@ -51,6 +51,8 @@ func Login (w http.ResponseWriter , req *http.Request){
     session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
         if err != nil {
             w.WriteHeader(http.StatusInternalServerError)
+            e := map[string]string{"message":"Internal Error "}		
+            json.NewEncoder(w).Encode(e)
                 panic(err)
         }
         defer session.Close()
