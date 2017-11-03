@@ -48,8 +48,8 @@ func routes(w http.ResponseWriter, req *http.Request) {
 func Welcome(w http.ResponseWriter, req *http.Request) {
 
 	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(`{ "message" : "Welcome to our personal assistant to register fill in your email , name and password in /register request"}`)
-
+	//json.NewEncoder(w).Encode(`{ "message" : "Welcome to our personal assistant to register fill in your email , name and password in /register request"}`)
+	json.NewEncoder(w).Encode("Welcome to our personal assistant to register fill in your email , name and password in /register request")
 }
 func main() {
 
