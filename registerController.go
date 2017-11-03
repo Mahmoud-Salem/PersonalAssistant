@@ -74,6 +74,7 @@ func Register (w http.ResponseWriter , req *http.Request){
           w.WriteHeader(http.StatusInternalServerError)  
           e := map[string]string{"message":"Error with the Database Connection"}		
           json.NewEncoder(w).Encode(e)
+          log(err)
           return
         }
         if(len(currentUsers)>0){
