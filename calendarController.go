@@ -44,7 +44,7 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
     session.SetMode(mgo.Monotonic, true)
 
     // Login 
-    users := session.DB("test").C("users")
+    users := session.DB("personalassistant").C("users")
     foundUser := User{}
     err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
     if(err != nil){
@@ -167,7 +167,7 @@ func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
     session.SetMode(mgo.Monotonic, true)
 
     // Login 
-    users := session.DB("test").C("users")
+    users := session.DB("personalassistant").C("users")
     foundUser := User{}
     err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
     if(err != nil){
@@ -260,7 +260,7 @@ func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
     session.SetMode(mgo.Monotonic, true)
 
     // Login 
-    users := session.DB("test").C("users")
+    users := session.DB("personalassistant").C("users")
     foundUser := User{}
     err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
     if(err != nil){
@@ -331,7 +331,7 @@ func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
     session.SetMode(mgo.Monotonic, true)
 
     // Login 
-    users := session.DB("test").C("users")
+    users := session.DB("personalassistant").C("users")
     foundUser := User{}
     err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
     if(err != nil){

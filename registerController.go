@@ -67,7 +67,7 @@ func Register (w http.ResponseWriter , req *http.Request){
             defer session.Close()
             session.SetMode(mgo.Monotonic, true)
                         // Registeration
-            users := session.DB("test").C("users")
+            users := session.DB("personalassistant").C("users")
             currentUsers := []User{User{}}
         err = users.Find(bson.M{"email": email}).All(&currentUsers)
         if(err != nil){

@@ -59,7 +59,7 @@ func Login (w http.ResponseWriter , req *http.Request){
         session.SetMode(mgo.Monotonic, true)
 
         // Login 
-        users := session.DB("test").C("users")
+        users := session.DB("personalassistant").C("users")
         foundUser := User{}
         err = users.Find(bson.M{"email": email}).One(&foundUser)
         if(err != nil){

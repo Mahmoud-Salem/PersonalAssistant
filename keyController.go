@@ -33,7 +33,7 @@ func HandleKey(w http.ResponseWriter, req *http.Request, body string) {
 	session.SetMode(mgo.Monotonic, true)
 
 	// validat the id
-	users := session.DB("test").C("users")
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
 	if err != nil {
@@ -123,8 +123,8 @@ func MakeKey(w http.ResponseWriter, req *http.Request, name string, value string
 	}
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
-	ai.Connect(session.DB("test").C("counters"))
-	users := session.DB("test").C("users")
+	ai.Connect(session.DB("personalassistant").C("counters"))
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 
@@ -217,7 +217,7 @@ func EditKey(w http.ResponseWriter, req *http.Request, id int, name string, valu
 	session.SetMode(mgo.Monotonic, true)
 
 	// Authentication
-	users := session.DB("test").C("users")
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
@@ -318,7 +318,7 @@ func DeleteKey(w http.ResponseWriter, req *http.Request, id int) {
 	session.SetMode(mgo.Monotonic, true)
 
 	// Login
-	users := session.DB("test").C("users")
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
@@ -390,7 +390,7 @@ func showAllKeys(w http.ResponseWriter, req *http.Request) {
 	session.SetMode(mgo.Monotonic, true)
 
 	// Authentication
-	users := session.DB("test").C("users")
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
@@ -462,7 +462,7 @@ func ShowKey(w http.ResponseWriter, req *http.Request, id int) {
 	session.SetMode(mgo.Monotonic, true)
 
 	// Authorization
-	users := session.DB("test").C("users")
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {

@@ -35,7 +35,7 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 	session.SetMode(mgo.Monotonic, true)
 
 	// validat the id
-	users := session.DB("test").C("users")
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
 	if err != nil {
@@ -119,8 +119,8 @@ func MakeMemo(w http.ResponseWriter, req *http.Request, name string, content str
 	}
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
-	ai.Connect(session.DB("test").C("counters"))
-	users := session.DB("test").C("users")
+	ai.Connect(session.DB("personalassistant").C("counters"))
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 
@@ -210,7 +210,7 @@ func EditMemo(w http.ResponseWriter, req *http.Request, id int, name string, con
 	session.SetMode(mgo.Monotonic, true)
 
 	// Authentication
-	users := session.DB("test").C("users")
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
@@ -310,7 +310,7 @@ func DeleteMemo(w http.ResponseWriter, req *http.Request, id int) {
 	session.SetMode(mgo.Monotonic, true)
 
 	// Login
-	users := session.DB("test").C("users")
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
@@ -380,7 +380,7 @@ func showAllMemos(w http.ResponseWriter, req *http.Request) {
 	session.SetMode(mgo.Monotonic, true)
 
 	// Authentication
-	users := session.DB("test").C("users")
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
@@ -451,7 +451,7 @@ func ShowMemo(w http.ResponseWriter, req *http.Request, id int) {
 	session.SetMode(mgo.Monotonic, true)
 
 	// Authorization
-	users := session.DB("test").C("users")
+	users := session.DB("personalassistant").C("users")
 	foundUser := User{}
 	err = users.Find(bson.M{"unique": req.Header.Get("Authorization")}).One(&foundUser)
 	if err != nil {
