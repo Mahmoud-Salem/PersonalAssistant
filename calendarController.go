@@ -34,7 +34,7 @@ func HandleCalendar(w http.ResponseWriter, req *http.Request ,body string) {
 func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
     // Check the existance of the needed attributes 
     auth := req.Header.Get("Authorization")
-    session, err := mgo.Dial("localhost")   
+    session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
             panic(err)
@@ -150,7 +150,7 @@ return
 
 func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
     auth := req.Header.Get("Authorization")
-    session, err := mgo.Dial("localhost")   
+    session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
             panic(err)
@@ -236,7 +236,7 @@ return
 
 func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
     auth := req.Header.Get("Authorization")
-    session, err := mgo.Dial("localhost")   
+    session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
             panic(err)
@@ -301,7 +301,7 @@ func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
 
 func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
     auth := req.Header.Get("Authorization")
-    session, err := mgo.Dial("localhost")   
+    session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
             panic(err)

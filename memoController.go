@@ -23,7 +23,7 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 	}
 	// validate the database connection
 	auth := req.Header.Get("Authorization")
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
@@ -105,7 +105,7 @@ func MakeMemoHandler(w http.ResponseWriter, req *http.Request, body string) {
 func MakeMemo(w http.ResponseWriter, req *http.Request, name string, content string) {
 
 	// database configuration
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
@@ -186,7 +186,7 @@ func EditMemo(w http.ResponseWriter, req *http.Request, id int, name string, con
 
 	// validity check using Authorization key
 	// database configuration
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
@@ -277,7 +277,7 @@ func DeleteMemo(w http.ResponseWriter, req *http.Request, id int) {
 
 	// validity check using Authentication key
 	// database configuration
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
@@ -341,7 +341,7 @@ func ShowAllMemosHandler(w http.ResponseWriter, req *http.Request, body string) 
 }
 
 func showAllMemos(w http.ResponseWriter, req *http.Request) {
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
@@ -403,7 +403,7 @@ func ShowMemoHandler(w http.ResponseWriter, req *http.Request, body string) {
 func ShowMemo(w http.ResponseWriter, req *http.Request, id int) {
 	// validity check using Authentication key
 	// database configuration
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)

@@ -53,7 +53,7 @@ func Register (w http.ResponseWriter , req *http.Request){
 		return
     }
             // database configuration 
-session, err := mgo.Dial("localhost")   
+session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
         ai.Connect(session.DB("test").C("counters"))
         if err != nil {
             w.WriteHeader(http.StatusInternalServerError)

@@ -21,7 +21,7 @@ func HandleKey(w http.ResponseWriter, req *http.Request, body string) {
 	}
 	// validate the database connection
 	auth := req.Header.Get("Authorization")
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
@@ -103,7 +103,7 @@ func MakeKeyHandler(w http.ResponseWriter, req *http.Request, body string) {
 func MakeKey(w http.ResponseWriter, req *http.Request, name string, value string) {
 
 	// database configuration
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
@@ -185,7 +185,7 @@ func EditKey(w http.ResponseWriter, req *http.Request, id int, name string, valu
 
 	// validity check using Authorization key
 	// database configuration
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
@@ -276,7 +276,7 @@ func DeleteKey(w http.ResponseWriter, req *http.Request, id int) {
 
 	// validity check using Authentication key
 	// database configuration
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
@@ -340,7 +340,7 @@ func ShowAllKeysHandler(w http.ResponseWriter, req *http.Request, body string) {
 }
 
 func showAllKeys(w http.ResponseWriter, req *http.Request) {
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
@@ -403,7 +403,7 @@ func ShowKeyHandler(w http.ResponseWriter, req *http.Request, body string) {
 func ShowKey(w http.ResponseWriter, req *http.Request, id int) {
 	// validity check using Authentication key
 	// database configuration
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
