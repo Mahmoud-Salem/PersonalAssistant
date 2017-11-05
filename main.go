@@ -8,6 +8,8 @@ import (
 	"strings"
 	"github.com/gorilla/mux"
 	"os"
+	cors "github.com/heppu/simple-cors"
+	
 )
 
 func routes(w http.ResponseWriter, req *http.Request) {
@@ -78,6 +80,6 @@ func main() {
 	}
 
 	log.Printf("Listening on port %s...\n", port)
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	log.Fatal(http.ListenAndServe(":"+port, cors.CORS(router)))
 
 }

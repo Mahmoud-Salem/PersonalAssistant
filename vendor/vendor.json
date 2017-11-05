@@ -25,6 +25,10 @@
 			"revision": ""
 		},
 		{
+			"path": "cors",
+			"revision": ""
+		},
+		{
 			"checksumSHA1": "yqF125xVSkmfLpIVGrLlfE05IUk=",
 			"path": "github.com/golang/protobuf/proto",
 			"revision": "1643683e1b54a9e88ad26d98f81400c8c9d9f4f9",
@@ -43,10 +47,22 @@
 			"revisionTime": "2017-10-20T03:47:00Z"
 		},
 		{
+			"checksumSHA1": "66FySld60ai7A8X83tqwih+Iguc=",
+			"path": "github.com/heppu/simple-cors",
+			"revision": "543cdec07e0c196abd48c5d966c0a0684cc47308",
+			"revisionTime": "2017-03-13T07:41:01Z"
+		},
+		{
 			"checksumSHA1": "AmmgTEwqZWUYx61PmJbXWNwiHrc=",
 			"path": "github.com/night-codes/mgo-ai",
 			"revision": "437243fe1a702ae728edd510c4bfdcdde3bc227d",
 			"revisionTime": "2017-03-12T04:47:18Z"
+		},
+		{
+			"checksumSHA1": "klQ0wW7q4yvBuZ7Q36LTTRfwzFk=",
+			"path": "github.com/ramin0/chatbot",
+			"revision": "c9bb79785b0225cdb629db50037d11361d8c0bed",
+			"revisionTime": "2017-09-22T23:21:59Z"
 		},
 		{
 			"checksumSHA1": "UWjVYmoHlIfHzVIskELHiJQtMOI=",
