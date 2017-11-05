@@ -9,8 +9,12 @@ import (
 	"github.com/gorilla/mux"
 	"os"
 	cors "github.com/heppu/simple-cors"
+	"crypto/md5"
+	
 	
 )
+
+
 
 func routes(w http.ResponseWriter, req *http.Request) {
 	auth := req.Header.Get("Authorization")
@@ -52,12 +56,16 @@ func routes(w http.ResponseWriter, req *http.Request) {
 }
 
 func Welcome(w http.ResponseWriter, req *http.Request) {
+		// Generate a UUID.
+	hasher := md5.New()
+	hasher.Write([]byte(strconv.FormatInt(time.Now().Unix(), 10)))
+	uuid := hex.EncodeToString(hasher.Sum(nil))
 
 	w.WriteHeader(200)
 //	json.NewEncoder(w).Encode(`{ "message" : "Welcome to our personal assistant to register fill in your email , name and password in /register request"}`)
 
 //json.NewEncoder(w).Encode({"message":"Welcome to our personal assistant to register fill in your email , name and password in /register request"}) 
-d := map[string]string{"message":"Welcome to our personal assistant to register fill in your email , name and password in /register request"}
+d := map[string]string{"message":"Welcome to our personal assistant to register fill in your email , name and password in /register request" , "uuid" : uuid}
 json.NewEncoder(w).Encode(d)
 }
 func main() {
