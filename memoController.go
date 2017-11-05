@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-
+	"fmt"
 	"strings"
 
 	"github.com/night-codes/mgo-ai"
@@ -23,6 +23,7 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 		json.NewEncoder(w).Encode(e)
 		return
 	}
+	
 	if strings.Split(lastToken, ":")[0] != "loggedin_id" || strings.Split(lastToken, ":")[1] == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		e := map[string]string{"message": "Please Provide The Authorization Key as loggedin_id"}
@@ -36,7 +37,7 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 		w.WriteHeader(http.StatusBadRequest)
 		e := map[string]string{"message": "Please Provide The Authorization Key"}
 		json.NewEncoder(w).Encode(e)
-		return
+		return 
 	}
 	// validate the database connection
 	auth := idToken
@@ -63,9 +64,15 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 
 	var newBody = ""
 	for i := 0; i < len(tokens)-1; i++ {
-		newBody = newBody + tokens[i] + "."
+		if i == len(tokens)-2 {
+			newBody = newBody + tokens[i]
+		} else {
+			newBody = newBody + tokens[i] + "."
 		}
+		}
+
 	body = newBody
+	fmt.Println(body)
 	//route to a handler based on the request
 	if strings.Contains(body, "make") {
 		MakeMemoHandler(w, req, body, auth)
@@ -89,6 +96,7 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 // a function that validates the make memo request and extracts the information from the request
 func MakeMemoHandler(w http.ResponseWriter, req *http.Request, body string, auth string) {
 	tokens := strings.Split(body, ".")
+	fmt.Println(len(tokens))
 	if len(tokens) != 4 {
 		w.WriteHeader(http.StatusBadRequest)
 		e := map[string]string{"message": "Invalid Format"}
@@ -101,7 +109,7 @@ func MakeMemoHandler(w http.ResponseWriter, req *http.Request, body string, auth
 		json.NewEncoder(w).Encode(e)
 		return
 	}
-	if len(tokens[3]) < 5 || len(tokens[4]) < 8 {
+	if len(tokens[2]) < 5 || len(tokens[3]) < 8 {
 		w.WriteHeader(http.StatusBadRequest)
 		e := map[string]string{"message": "Invalid Format"}
 		json.NewEncoder(w).Encode(e)

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
+	"fmt"
 	"github.com/night-codes/mgo-ai"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -59,12 +59,17 @@ func HandleKey(w http.ResponseWriter, req *http.Request, body string) {
 		json.NewEncoder(w).Encode(e)
 		return
 	}
-
 	var newBody = ""
 	for i := 0; i < len(tokens)-1; i++ {
-		newBody = newBody + tokens[i] + "."
-	}
+		if i == len(tokens)-2 {
+			newBody = newBody + tokens[i]
+		} else {
+			newBody = newBody + tokens[i] + "."
+		}
+		}
+
 	body = newBody
+	fmt.Println(body)
 	//route to a handler based on the request
 	if strings.Contains(body, "make") {
 		MakeKeyHandler(w, req, body, auth)
