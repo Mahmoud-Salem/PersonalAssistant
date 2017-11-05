@@ -93,7 +93,7 @@ func Register (w http.ResponseWriter , req *http.Request , body string){
                 return
         }else{
             w.WriteHeader(http.StatusOK)
-            e := map[string]string{"message":"User Registered Successfully , your id to perform actions :"+string(hashedemail) }		
+            e := map[string]string{"message":"User Registered Successfully , your id to perform actions : "+string(hashedemail) }		
             json.NewEncoder(w).Encode(e)
         }
 

@@ -194,7 +194,7 @@ func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
     // Login 
     users := session.DB("personalassistant").C("users")
     foundUser := User{}
-    err = users.Find(bson.M{"unique": auth}).One(&foundUser)
+    err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
     if(err != nil){
         w.WriteHeader(http.StatusUnauthorized)
         e := map[string]string{"message":"No Such ID."}		

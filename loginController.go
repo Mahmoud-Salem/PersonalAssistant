@@ -61,7 +61,7 @@ func Login (w http.ResponseWriter , req *http.Request , body string){
         return
     }else{
         w.WriteHeader(http.StatusOK)
-        e := map[string]string{"message":"Logged-in Succesfully your id to perform actions :"+foundUser.Unique}		
+        e := map[string]string{"message":"Logged-in Succesfully your id to perform actions : "+foundUser.Unique}		
         json.NewEncoder(w).Encode(e)
         return
     }

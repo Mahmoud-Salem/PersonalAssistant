@@ -104,7 +104,7 @@ func Welcome(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
 	w.WriteHeader(200)
-	d := map[string]string{"message":"Welcome to our personal assistant to register fill in your email , name and password in /register request" , "uuid" : uuid}
+	d := map[string]string{"message":"Welcome to our personal assistant to register fill in your email , name and password in register request request or login with email and password" , "uuid" : uuid}
 	json.NewEncoder(w).Encode(d)
 }
 func main() {
