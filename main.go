@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"time"
 	"encoding/hex"
+	"fmt"
 	
 	
 )
@@ -58,6 +59,19 @@ func routes(w http.ResponseWriter, req *http.Request) {
 
 }
 
+func handle(w http.ResponseWriter, r *http.Request) {
+	body :=
+		"<!DOCTYPE html><html><head><title>Chatbot</title></head><body><pre style=\"font-family: monospace;\">\n" +
+			"Available Routes:\n\n" +
+			"  GET  /welcome -> Welcome\n" +
+			"  POST /chat    -> routes\n" +
+			"  GET  /        -> handle        (current)\n" +
+			"</pre></body></html>"
+	w.Header().Add("Content-Type", "text/html")
+	fmt.Fprintln(w, body)
+	
+}
+
 func Welcome(w http.ResponseWriter, req *http.Request) {
 		// Generate a UUID.
 	hasher := md5.New()
@@ -78,7 +92,7 @@ func main() {
 
 	// welcoming 
 	router.HandleFunc("/welcome", Welcome).Methods("GET")
-	router.HandleFunc("/", Welcome).Methods("GET")
+	router.HandleFunc("/", handle).Methods("GET")
 	// Register and login
 	router.HandleFunc("/register", Register).Methods("POST")
 	router.HandleFunc("/login", Login).Methods("POST")
