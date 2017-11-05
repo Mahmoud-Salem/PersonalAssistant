@@ -202,8 +202,7 @@ func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
         return
       }
 
-    //email := foundUser.Email
-    //cal := foundUser.CalendarId
+
     srv ,err3 := Calendar();
         
 	if err3 != nil {	
