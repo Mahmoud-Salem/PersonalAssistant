@@ -13,23 +13,9 @@ import(
 
  
 
-func Register (w http.ResponseWriter , req *http.Request){
+func Register (w http.ResponseWriter , req *http.Request , body string){
    
-   // Validity checking    
-   if req.Body == nil {
-    w.WriteHeader(http.StatusBadRequest)
-    e := map[string]string{"message":"provide your name , email and password in the following format to register . name : mahmoud . email : ms@gmail.com . password :123456 . "}		
-    json.NewEncoder(w).Encode(e)
-    return
-}
-    req.ParseForm()
-    if req.Form.Get("message") == "" {
-		w.WriteHeader(http.StatusBadRequest)
-        e := map[string]string{"message":"provide your name , email and password in the following format to register . name : mahmoud . email : ms@gmail.com . password :123456 . "}		
-        json.NewEncoder(w).Encode(e)
-		return
-    }
-    body := req.Form.Get("message")
+
 
     tokens := strings.Split(body, ".")
     
@@ -51,7 +37,7 @@ func Register (w http.ResponseWriter , req *http.Request){
     }
     if !(name != "" && email != "" && password != "") {
         w.WriteHeader(http.StatusBadRequest)
-        e := map[string]string{"message":"provide your name , email and password in the following format to register . name : mahmoud . email : ms@gmail.com . password :123456 . "}		
+        e := map[string]string{"message":"provide your name , email and password in the following format to register . register request . name : mahmoud . email : ms@gmail.com . password :123456 . "}		
         json.NewEncoder(w).Encode(e)
 		return
     }

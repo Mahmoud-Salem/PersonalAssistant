@@ -17,18 +17,18 @@ import (
 	
 	
 )
+type (
 
+	// JSON Holds a JSON object
+	JSON map[string]interface{}
+
+)
 
 
 func routes(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")	
-	auth := req.Header.Get("Authorization")
-	if auth == "" || req.Header["Authorization"] == nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		e := map[string]string{"message":"You have to include your id ."}		
-		json.NewEncoder(w).Encode(e)
-		return
-	}
+
+
 	if req.Body == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		e := map[string]string{"message":"Ask me Something ."}		
@@ -36,14 +36,36 @@ func routes(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	req.ParseForm()
-	if req.Form.Get("message") == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		e := map[string]string{"message":"The message can't be empty."}		
+	data := JSON{}
+	if err := json.NewDecoder(req.Body).Decode(&data); err != nil {
+		http.Error(w, fmt.Sprintf("Couldn't decode JSON: %v.", err), http.StatusBadRequest)
+		return
+	}
+	defer req.Body.Close()
+
+
+	_, messageFound := data["message"]
+	if !messageFound {
+		http.Error(w, "Missing message key in body.", http.StatusBadRequest)
+		return
+	}
+	body := data["message"].(string)
+
+
+
+	if strings.Contains(body, "login") {
+		Login(w, req, body)
+	} else if strings.Contains(body, "register") {
+		Register(w, req, body)
+	} else {
+	
+	auth := req.Header.Get("Authorization")
+	if auth == "" || req.Header["Authorization"] == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		e := map[string]string{"message":"You have to include your id ."}		
 		json.NewEncoder(w).Encode(e)
 		return
 	}
-	body := req.Form.Get("message")
 
 	if strings.Contains(body, "calendar") {
 		HandleCalendar(w, req, body)
@@ -57,7 +79,7 @@ func routes(w http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(w).Encode(e)
 		return
 	}
-
+}
 }
 
 func handle(w http.ResponseWriter, r *http.Request) {
@@ -81,11 +103,8 @@ func Welcome(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
 	w.WriteHeader(200)
-//	json.NewEncoder(w).Encode(`{ "message" : "Welcome to our personal assistant to register fill in your email , name and password in /register request"}`)
-
-//json.NewEncoder(w).Encode({"message":"Welcome to our personal assistant to register fill in your email , name and password in /register request"}) 
-d := map[string]string{"message":"Welcome to our personal assistant to register fill in your email , name and password in /register request" , "uuid" : uuid}
-json.NewEncoder(w).Encode(d)
+	d := map[string]string{"message":"Welcome to our personal assistant to register fill in your email , name and password in /register request" , "uuid" : uuid}
+	json.NewEncoder(w).Encode(d)
 }
 func main() {
 
@@ -96,8 +115,8 @@ func main() {
 	router.HandleFunc("/welcome", Welcome).Methods("GET")
 	router.HandleFunc("/", handle).Methods("GET")
 	// Register and login
-	router.HandleFunc("/register", Register).Methods("POST")
-	router.HandleFunc("/login", Login).Methods("POST")
+//	router.HandleFunc("/register", Register).Methods("POST")
+//	router.HandleFunc("/login", Login).Methods("POST")
 
 	// Services
 	router.HandleFunc("/chat", routes).Methods("POST")

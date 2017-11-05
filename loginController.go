@@ -9,23 +9,8 @@ import(
     "strings"
 )
 
-func Login (w http.ResponseWriter , req *http.Request){
+func Login (w http.ResponseWriter , req *http.Request , body string){
 
-   // Validity checking    
-   if req.Body == nil {
-    w.WriteHeader(http.StatusBadRequest)
-    e := map[string]string{"message":"provide your email and password in the following format to login . email : ms@gmail.com . password :123456 . "}		
-    json.NewEncoder(w).Encode(e)
-    return
-}
-    req.ParseForm()
-    if req.Form.Get("message") == "" {
-		w.WriteHeader(http.StatusBadRequest)
-        e := map[string]string{"message":"provide your email and password in the following format to login . email : ms@gmail.com . password :123456 . "}		
-        json.NewEncoder(w).Encode(e)
-		return
-    }
-    body := req.Form.Get("message")
 
     tokens := strings.Split(body, ".")
     
@@ -43,7 +28,7 @@ func Login (w http.ResponseWriter , req *http.Request){
     }
     if !(email != "" && password != "") {
         w.WriteHeader(http.StatusBadRequest)
-        e := map[string]string{"message":"provide your email and password in the following format to login . email : ms@gmail.com . password :123456 . "}		
+        e := map[string]string{"message":"provide your email and password in the following format to login . Login request . email : ms@gmail.com . password :123456 . "}		
         json.NewEncoder(w).Encode(e)
 		return
     }
