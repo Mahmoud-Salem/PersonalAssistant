@@ -6,9 +6,9 @@ import (
   "io/ioutil"
   "log"
   "net/http"
-  "net/url"
+  // "net/url"
   "os"
-  "os/user"
+  // "os/user"
   "path/filepath"
   "golang.org/x/net/context"
   "golang.org/x/oauth2"
@@ -53,14 +53,15 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 // tokenCacheFile generates credential file path/filename.
 // It returns the generated credential path/filename.
 func tokenCacheFile() (string, error) {
-  usr, err := user.Current()
-  if err != nil {
-    return "", err
-  }
-  tokenCacheDir := filepath.Join(usr.HomeDir, ".credentials")
-  os.MkdirAll(tokenCacheDir, 0700)
-  return filepath.Join(tokenCacheDir,
-    url.QueryEscape("calendar-go-quickstart.json")), err
+  // usr, err := user.Current()
+  // if err != nil {
+  //   return "", err
+  // }
+  //tokenCacheDir := filepath.Join(usr.HomeDir, ".credentials")
+ return  filepath.Abs("calendar-go-quickstart.json")
+  // os.MkdirAll(tokenCacheDir, 0700)
+  // return filepath.Join(tokenCacheDir,
+  //   url.QueryEscape("calendar-go-quickstart.json")), err
 }
 
 // tokenFromFile retrieves a Token from a given file path.
