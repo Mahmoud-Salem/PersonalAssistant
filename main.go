@@ -21,6 +21,7 @@ import (
 
 
 func routes(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")	
 	auth := req.Header.Get("Authorization")
 	if auth == "" || req.Header["Authorization"] == nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -77,7 +78,8 @@ func Welcome(w http.ResponseWriter, req *http.Request) {
 	hasher := md5.New()
 	hasher.Write([]byte(strconv.FormatInt(time.Now().Unix(), 10)))
 	uuid := hex.EncodeToString(hasher.Sum(nil))
-
+	w.Header().Set("Content-Type", "application/json")
+	
 	w.WriteHeader(200)
 //	json.NewEncoder(w).Encode(`{ "message" : "Welcome to our personal assistant to register fill in your email , name and password in /register request"}`)
 
