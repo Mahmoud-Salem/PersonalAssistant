@@ -80,13 +80,7 @@ func Register (w http.ResponseWriter , req *http.Request , body string){
             json.NewEncoder(w).Encode(e)
            return
         }
-        // hashedemail, err := bcrypt.GenerateFromPassword([]byte(email), bcrypt.DefaultCost)
-        // if(err != nil){
-        //     w.WriteHeader(http.StatusInternalServerError)
-        //     e := map[string]string{"message":"Error with the Encryption Tool"}		
-        //     json.NewEncoder(w).Encode(e)
-        //    return
-        // }
+
         hasher := md5.New()
         hasher.Write([]byte(strconv.FormatInt(time.Now().Unix(), 10)))
         uuid := hex.EncodeToString(hasher.Sum(nil))
