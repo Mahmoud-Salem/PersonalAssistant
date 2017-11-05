@@ -34,7 +34,42 @@ func HandleCalendar(w http.ResponseWriter, req *http.Request ,body string) {
 
 func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
     // Check the existance of the needed attributes 
-    auth := req.Header.Get("Authorization")
+   // auth := req.Header.Get("Authorization")
+
+   tokens := strings.Split(body, ".")
+   
+   starttime := "" 
+   endtime := "" 
+   name := "" 
+   description := "" 
+   auth := ""
+   for i:= 0 ; i<len(tokens) ; i++ {
+       req := strings.Split(tokens[i], "/")
+
+       if strings.TrimSpace(req[0]) == "start time" {
+           starttime = strings.TrimSpace(req[1])
+       }
+       if strings.TrimSpace(req[0]) == "end time" {
+           endtime = strings.TrimSpace(req[1])
+       }
+       if strings.TrimSpace(req[0]) == "name" {
+           name = strings.TrimSpace(req[1])
+       }
+       if strings.TrimSpace(req[0]) == "description" {
+           description = strings.TrimSpace(req[1])
+       }
+       if strings.TrimSpace(req[0]) == "loggedin_id" {
+        auth = strings.TrimSpace(req[1])
+    }
+   }
+   t := time.Now().Format(time.RFC3339)
+   if !(starttime != "" && endtime != "" && name != "" && description != "" && auth != "") {
+       w.WriteHeader(http.StatusBadRequest)
+       str := "Your request for adding event should be as follows : add calendar event . loggedin_id/ id . start time /"+t+" . end time /"+t+". name / anything . description / anything."
+       e := map[string]string{"message":str}		
+       json.NewEncoder(w).Encode(e)
+       return	
+   }
     session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
@@ -46,7 +81,7 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
     // Login 
     users := session.DB("personalassistant").C("users")
     foundUser := User{}
-    err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
+    err = users.Find(bson.M{"unique": auth}).One(&foundUser)
     if(err != nil){
         w.WriteHeader(http.StatusUnauthorized)
         e := map[string]string{"message":"No Such ID."}		
@@ -91,36 +126,7 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
 
     // Creating new Event 
 
-    tokens := strings.Split(body, ".")
-    
-    starttime := "" 
-    endtime := "" 
-    name := "" 
-    description := "" 
-    for i:= 0 ; i<len(tokens) ; i++ {
-        req := strings.Split(tokens[i], "/")
 
-        if strings.TrimSpace(req[0]) == "start time" {
-            starttime = strings.TrimSpace(req[1])
-        }
-        if strings.TrimSpace(req[0]) == "end time" {
-            endtime = strings.TrimSpace(req[1])
-        }
-        if strings.TrimSpace(req[0]) == "name" {
-            name = strings.TrimSpace(req[1])
-        }
-        if strings.TrimSpace(req[0]) == "description" {
-            description = strings.TrimSpace(req[1])
-        }
-    }
-    t := time.Now().Format(time.RFC3339)
-    if !(starttime != "" && endtime != "" && name != "" && description != "") {
-        w.WriteHeader(http.StatusBadRequest)
-        str := "Your request for adding event should be as follows : add calendar event . start time /"+t+" . end time /"+t+". name / anything . description / anything."
-        e := map[string]string{"message":str}		
-        json.NewEncoder(w).Encode(e)
-        return	
-    }
     
 	event:= &calendar.Event{
 			Summary: name,
@@ -141,7 +147,7 @@ func AddEvent(w http.ResponseWriter, req *http.Request ,  body string){
 		  
 		  if err != nil {
             w.WriteHeader(http.StatusBadRequest)
-            str := "Your request for adding event should be as follows : add calendar event . start time /"+t+" . end time /"+t+". name / anything . description / anything."
+            str := "Your request for adding event should be as follows : add calendar event . loggedin_id : id . start time /"+t+" . end time /"+t+". name / anything . description / anything."
             e := map[string]string{"message":str}		
             json.NewEncoder(w).Encode(e)
             return	
@@ -157,7 +163,26 @@ return
 
 
 func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
-    auth := req.Header.Get("Authorization")
+
+    tokens := strings.Split(body, ".")
+
+   auth := ""
+   for i:= 0 ; i<len(tokens) ; i++ {
+       req := strings.Split(tokens[i], ":")
+
+       if strings.TrimSpace(req[0]) == "loggedin_id" {
+        auth = strings.TrimSpace(req[1])
+    }
+   }
+
+   if auth == "" {
+    w.WriteHeader(http.StatusBadRequest)
+    str := "Your request for adding event should be as follows : show all calendar events . loggedin_id : id ."
+    e := map[string]string{"message":str}		
+    json.NewEncoder(w).Encode(e)
+    return	
+}
+
     session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
@@ -169,7 +194,7 @@ func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
     // Login 
     users := session.DB("personalassistant").C("users")
     foundUser := User{}
-    err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
+    err = users.Find(bson.M{"unique": auth}).One(&foundUser)
     if(err != nil){
         w.WriteHeader(http.StatusUnauthorized)
         e := map[string]string{"message":"No Such ID."}		
@@ -250,7 +275,26 @@ return
 ///////////////////////////////////////////////////////////////////
 
 func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
-    auth := req.Header.Get("Authorization")
+
+    tokens := strings.Split(body, ".")
+    id := ""
+    auth := ""
+    for  i:=0 ; i<len(tokens) ; i++ {
+        req := strings.Split(tokens[i], ":")
+        if strings.TrimSpace(req[0]) == "event id" {
+            id = strings.TrimSpace(req[1])
+        }
+        if strings.TrimSpace(req[0]) == "loggedin_id" {
+            auth = strings.TrimSpace(req[1])
+        }
+    }
+    if id == "" || auth == "" {
+        w.WriteHeader(http.StatusBadRequest)
+        e := map[string]string{"message":"Your request for adding event should be as follows : delete calendar event .loggedin_id : id .  event id :id."}		
+        json.NewEncoder(w).Encode(e)
+        return	
+    }
+
     session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
@@ -262,7 +306,7 @@ func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
     // Login 
     users := session.DB("personalassistant").C("users")
     foundUser := User{}
-    err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
+    err = users.Find(bson.M{"unique": auth}).One(&foundUser)
     if(err != nil){
         w.WriteHeader(http.StatusUnauthorized)
         e := map[string]string{"message":"No Such ID."}		
@@ -290,20 +334,7 @@ func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
 		return	
         }
 
-        tokens := strings.Split(body, ".")
-        id := ""
-    for  i:=0 ; i<len(tokens) ; i++ {
-            req := strings.Split(tokens[i], ":")
-            if strings.TrimSpace(req[0]) == "event id" {
-                id = strings.TrimSpace(req[1])
-            }
-        }
-        if id == "" {
-            w.WriteHeader(http.StatusBadRequest)
-            e := map[string]string{"message":"Your request for adding event should be as follows : delete calendar event . event id :id."}		
-            json.NewEncoder(w).Encode(e)
-            return	
-        }
+
          errr:=srv.Events.Delete(cal,id).Do()
           if errr != nil {
             w.WriteHeader(422)
@@ -321,7 +352,46 @@ func DeleteEvent(w http.ResponseWriter, req *http.Request , body string){
 ///////////////////////////////////////////////////
 
 func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
-    auth := req.Header.Get("Authorization")
+
+
+    starttime := ""
+    endtime := ""
+    name := ""
+    description := ""
+    eventId := ""
+    auth :=""
+    tokens := strings.Split(body, ".")
+    
+        for i:=0 ; i<len(tokens) ; i++ {
+            req := strings.Split(tokens[i], "/")
+            if strings.TrimSpace(req[0]) == "start time" {
+                starttime = strings.TrimSpace(req[1])
+            }
+            if strings.TrimSpace(req[0]) == "end time" {
+                endtime = strings.TrimSpace(req[1])
+            }
+            if strings.TrimSpace(req[0]) == "name" {
+                name = strings.TrimSpace(req[1])
+            }
+            if strings.TrimSpace(req[0]) == "description" {
+                description = strings.TrimSpace(req[1])
+            }
+            if strings.TrimSpace(req[0]) == "event id" {
+                eventId = strings.TrimSpace(req[1])
+            }
+            if strings.TrimSpace(req[0]) == "loggedin_id" {
+                auth = strings.TrimSpace(req[1])
+            }
+        }
+        t := time.Now().Format(time.RFC3339)
+        if eventId == "" || auth == "" {
+            w.WriteHeader(http.StatusBadRequest)
+            str := "Your request for modifying event should be as follows : modify calendar event .loggedin_id / id .(Obligatory) event id / id . (Optional) start time / "+t+" . (Optional) end time / "+t+". (Optional) name / anything . (Optional) description / anything."
+            e := map[string]string{"message":str}		
+            json.NewEncoder(w).Encode(e)
+            return	
+        }
+
     session, err := mgo.Dial("mongodb://mahmoud.salem:123a456@ds145223.mlab.com:45223/personalassistant")   
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
@@ -333,7 +403,7 @@ func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
     // Login 
     users := session.DB("personalassistant").C("users")
     foundUser := User{}
-    err = users.Find(bson.M{"unique": string(auth)}).One(&foundUser)
+    err = users.Find(bson.M{"unique": auth}).One(&foundUser)
     if(err != nil){
         w.WriteHeader(http.StatusUnauthorized)
         e := map[string]string{"message":"No Such ID."}		
@@ -359,41 +429,6 @@ func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
         json.NewEncoder(w).Encode(e)
         return
     }
-
-    starttime := ""
-    endtime := ""
-    name := ""
-    description := ""
-    eventId := ""
-
-    tokens := strings.Split(body, ".")
-    
-        for i:=0 ; i<len(tokens) ; i++ {
-            req := strings.Split(tokens[i], "/")
-            if strings.TrimSpace(req[0]) == "start time" {
-                starttime = strings.TrimSpace(req[1])
-            }
-            if strings.TrimSpace(req[0]) == "end time" {
-                endtime = strings.TrimSpace(req[1])
-            }
-            if strings.TrimSpace(req[0]) == "name" {
-                name = strings.TrimSpace(req[1])
-            }
-            if strings.TrimSpace(req[0]) == "description" {
-                description = strings.TrimSpace(req[1])
-            }
-            if strings.TrimSpace(req[0]) == "event id" {
-                eventId = strings.TrimSpace(req[1])
-            }
-        }
-        t := time.Now().Format(time.RFC3339)
-        if eventId == "" {
-            w.WriteHeader(http.StatusBadRequest)
-            str := "Your request for modifying event should be as follows : modify calendar event .(Obligatory) event id / id . (Optional) start time / "+t+" . (Optional) end time / "+t+". (Optional) name / anything . (Optional) description / anything."
-            e := map[string]string{"message":str}		
-            json.NewEncoder(w).Encode(e)
-            return	
-        }
 
 
         event,err5 := srv.Events.Get(cal, eventId).Do()
@@ -422,7 +457,7 @@ func ModifyEvent(w http.ResponseWriter, req *http.Request,body string){
         _,errr:=srv.Events.Update(cal,eventId,event).Do()
         if errr != nil {
           w.WriteHeader(http.StatusBadRequest)
-          str := "Your request for modifying event should be as follows : modify calendar event .(Obligatory) event id / id . (Optional) start time / "+t+" . (Optional) end time / "+t+". (Optional) name / anything . (Optional) description / anything."
+          str := "Your request for modifying event should be as follows : modify calendar event .loggedin_id / id .(Obligatory) event id / id . (Optional) start time / "+t+" . (Optional) end time / "+t+". (Optional) name / anything . (Optional) description / anything."
           e := map[string]string{"message":str}		
           json.NewEncoder(w).Encode(e)
         return	

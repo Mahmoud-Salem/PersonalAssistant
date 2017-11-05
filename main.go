@@ -28,6 +28,13 @@ type (
 func routes(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")	
 
+	auth := req.Header.Get("Authorization")
+	if auth == "" || req.Header["Authorization"] == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		e := map[string]string{"message":"You have to include your id ."}		
+		json.NewEncoder(w).Encode(e)
+		return
+	}
 
 	if req.Body == nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -59,13 +66,7 @@ func routes(w http.ResponseWriter, req *http.Request) {
 		Register(w, req, body)
 	} else {
 	
-	auth := req.Header.Get("Authorization")
-	if auth == "" || req.Header["Authorization"] == nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		e := map[string]string{"message":"You have to include your id ."}		
-		json.NewEncoder(w).Encode(e)
-		return
-	}
+
 
 	if strings.Contains(body, "calendar") {
 		HandleCalendar(w, req, body)
