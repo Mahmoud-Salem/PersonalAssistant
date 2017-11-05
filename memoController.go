@@ -63,8 +63,8 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 
 	var newBody = ""
 	for i := 0; i < len(tokens)-1; i++ {
-		newBody = tokens[i] + "." + newBody
-	}
+		newBody = newBody + tokens[i] + "."
+		}
 	body = newBody
 	//route to a handler based on the request
 	if strings.Contains(body, "make") {
