@@ -420,7 +420,8 @@ func showAllMemos(w http.ResponseWriter, req *http.Request, auth string) {
 	}
 	currentMemos := foundUser.Memos
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(currentMemos)
+	e := map[string][]Memo{"message": currentMemos}
+	json.NewEncoder(w).Encode(e)
 	return
 }
 
@@ -496,7 +497,8 @@ func ShowMemo(w http.ResponseWriter, req *http.Request, id int, auth string) {
 	for i := 0; i < len(currentMemos); i++ {
 		if currentMemos[i].Id == inputId {
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(currentMemos[i])
+			e := map[string]Memo{"message": currentMemos[i]}
+			json.NewEncoder(w).Encode(e)
 			return
 		}
 

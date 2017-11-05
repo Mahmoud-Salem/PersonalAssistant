@@ -422,7 +422,8 @@ func showAllKeys(w http.ResponseWriter, req *http.Request, auth string) {
 	}
 	currentKeys := foundUser.Keys
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(currentKeys)
+	e := map[string][]Key{"message": currentKeys}
+	json.NewEncoder(w).Encode(e)
 	return
 }
 
@@ -498,7 +499,8 @@ func ShowKey(w http.ResponseWriter, req *http.Request, id int, auth string) {
 	for i := 0; i < len(currentKeys); i++ {
 		if currentKeys[i].Id == inputId {
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(currentKeys[i])
+			e := map[string]Key{"message": currentKeys[i]}
+			json.NewEncoder(w).Encode(e)
 			return
 		}
 
