@@ -169,10 +169,10 @@ func ShowCalendar(w http.ResponseWriter, req *http.Request , body string){
    auth := ""
    for i:= 0 ; i<len(tokens) ; i++ {
        req := strings.Split(tokens[i], ":")
-
+       if len(req) != 0 {
        if strings.TrimSpace(req[0]) == "loggedin_id" {
         auth = strings.TrimSpace(req[1])
-    }
+    }}
    }
 
    if auth == "" {
