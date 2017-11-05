@@ -19,13 +19,13 @@ func HandleMemo(w http.ResponseWriter, req *http.Request, body string) {
 	var lastToken = (tokens[len(tokens)-1])
 	if len(strings.Split(lastToken, ":")) < 2 {
 		w.WriteHeader(http.StatusBadRequest)
-		e := map[string]string{"message": "Please Provide The Authorization Key as loggedin_id length <2"}
+		e := map[string]string{"message": "Please Provide The Authorization Key as loggedin_id"}
 		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if strings.Split(lastToken, ":")[0] != "loggedin_id" || strings.Split(lastToken, ":")[1] == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		e := map[string]string{"message": "Please Provide The Authorization Key as loggedin_id  found empty "}
+		e := map[string]string{"message": "Please Provide The Authorization Key as loggedin_id"}
 		json.NewEncoder(w).Encode(e)
 		return
 	}
