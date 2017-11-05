@@ -62,12 +62,12 @@ json.NewEncoder(w).Encode(d)
 }
 func main() {
 
-	//router setup
+	//router setup2
 	router := mux.NewRouter()
 
 	// welcoming 
 	router.HandleFunc("/welcome", Welcome).Methods("GET")
-	
+	router.HandleFunc("/", Welcome).Methods("GET")
 	// Register and login
 	router.HandleFunc("/register", Register).Methods("POST")
 	router.HandleFunc("/login", Login).Methods("POST")
