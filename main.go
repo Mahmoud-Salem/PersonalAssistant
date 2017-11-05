@@ -75,7 +75,7 @@ func routes(w http.ResponseWriter, req *http.Request) {
 		HandleKey(w, req, body)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		e := map[string]string{"message":"You have to specify what service you want calendar , keys or memos ."}		
+		e := map[string]string{"message":" if you are logged in . You have to specify what service you want calendar , keys or memos . else register or login"}		
 		json.NewEncoder(w).Encode(e)
 		return
 	}
