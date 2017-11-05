@@ -420,9 +420,15 @@ func showAllKeys(w http.ResponseWriter, req *http.Request, auth string) {
 		json.NewEncoder(w).Encode(e)
 		return
 	}
-	currentKeys := foundUser.Keys
+
+	keys := foundUser.Keys
+	
 	w.WriteHeader(http.StatusOK)
-	e := map[string][]Key{"message": currentKeys}
+	result := ""
+	for i := 0; i < len(keys); i++ {
+		result = result + strconv.Itoa(int(keys[i].Id)) + "; " + keys[i].Name + "; " + keys[i].Value + "    "
+	}
+	e := map[string]string{"message": result}
 	json.NewEncoder(w).Encode(e)
 	return
 }
@@ -498,9 +504,12 @@ func ShowKey(w http.ResponseWriter, req *http.Request, id int, auth string) {
 	found := 0
 	for i := 0; i < len(currentKeys); i++ {
 		if currentKeys[i].Id == inputId {
+
 			w.WriteHeader(http.StatusOK)
-			e := map[string]Key{"message": currentKeys[i]}
+			result := strconv.Itoa(int(currentKeys[i].Id)) + "; " + currentKeys[i].Name + "; " + currentKeys[i].Value + "    "
+			e := map[string]string{"message": result}
 			json.NewEncoder(w).Encode(e)
+
 			return
 		}
 

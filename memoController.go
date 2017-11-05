@@ -418,10 +418,15 @@ func showAllMemos(w http.ResponseWriter, req *http.Request, auth string) {
 		json.NewEncoder(w).Encode(e)
 		return
 	}
-	currentMemos := foundUser.Memos
 	w.WriteHeader(http.StatusOK)
-	e := map[string][]Memo{"message": currentMemos}
+	result := ""
+	memos := foundUser.Memos
+	for i := 0; i < len(memos); i++ {
+		result = result + strconv.Itoa(int(memos[i].Id)) + "; " + memos[i].Name + "; " + memos[i].Content + "    "
+	}
+	e := map[string]string{"message": result}
 	json.NewEncoder(w).Encode(e)
+
 	return
 }
 
@@ -497,7 +502,8 @@ func ShowMemo(w http.ResponseWriter, req *http.Request, id int, auth string) {
 	for i := 0; i < len(currentMemos); i++ {
 		if currentMemos[i].Id == inputId {
 			w.WriteHeader(http.StatusOK)
-			e := map[string]Memo{"message": currentMemos[i]}
+			result := strconv.Itoa(int(currentMemos[i].Id)) + "; " + currentMemos[i].Name + "; " + currentMemos[i].Content + "    "
+			e := map[string]string{"message": result}
 			json.NewEncoder(w).Encode(e)
 			return
 		}
