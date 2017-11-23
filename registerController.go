@@ -41,7 +41,7 @@ func Register (w http.ResponseWriter , req *http.Request , body string){
     }
     if !(name != "" && email != "" && password != "") {
         w.WriteHeader(http.StatusBadRequest)
-        e := map[string]string{"message":"provide your name , email and password in the following format to register . register request . name : mahmoud . username : ms . password :123456 . "}		
+        e := map[string]string{"message":"provide your name , username and password in the following format to register . register request . name : mahmoud . username : ms . password :123456 . "}		
         json.NewEncoder(w).Encode(e)
 		return
     }
@@ -68,7 +68,7 @@ func Register (w http.ResponseWriter , req *http.Request , body string){
         }
         if(len(currentUsers)>0){
         w.WriteHeader(http.StatusForbidden)
-        e := map[string]string{"message":"This Email Already Exists"}		
+        e := map[string]string{"message":"This Username Already Exists"}		
         json.NewEncoder(w).Encode(e)
           return
         }

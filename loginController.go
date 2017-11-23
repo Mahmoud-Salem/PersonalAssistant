@@ -28,7 +28,7 @@ func Login (w http.ResponseWriter , req *http.Request , body string){
     }
     if !(email != "" && password != "") {
         w.WriteHeader(http.StatusBadRequest)
-        e := map[string]string{"message":"provide your email and password in the following format to login . Login request . username : ms. password :123456 . "}		
+        e := map[string]string{"message":"provide your username and password in the following format to login . Login request . username : ms. password :123456 . "}		
         json.NewEncoder(w).Encode(e)
 		return
     }
@@ -49,7 +49,7 @@ func Login (w http.ResponseWriter , req *http.Request , body string){
         err = users.Find(bson.M{"email": email}).One(&foundUser)
         if(err != nil){
           w.WriteHeader(http.StatusUnauthorized)
-          e := map[string]string{"message":"No Such Email "}		
+          e := map[string]string{"message":"No Such Username "}		
           json.NewEncoder(w).Encode(e)
           return
         }
