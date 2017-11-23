@@ -19,7 +19,7 @@ func Login (w http.ResponseWriter , req *http.Request , body string){
     for i:= 0 ; i<len(tokens) ; i++ {
         req := strings.Split(tokens[i], ":")
 
-        if strings.TrimSpace(req[0]) == "email" {
+        if strings.TrimSpace(req[0]) == "username" {
             email = strings.TrimSpace(req[1])
         }
         if strings.TrimSpace(req[0]) == "password" {
@@ -28,7 +28,7 @@ func Login (w http.ResponseWriter , req *http.Request , body string){
     }
     if !(email != "" && password != "") {
         w.WriteHeader(http.StatusBadRequest)
-        e := map[string]string{"message":"provide your email and password in the following format to login . Login request . email : ms@gmail.com . password :123456 . "}		
+        e := map[string]string{"message":"provide your email and password in the following format to login . Login request . username : ms. password :123456 . "}		
         json.NewEncoder(w).Encode(e)
 		return
     }
